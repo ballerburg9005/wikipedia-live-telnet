@@ -34,8 +34,8 @@ Make sure to change firewall to allow port 23 and ollama-server port (default:50
 
 ### If you run telnet server and ollama-server on same machine:
 ```
-docker run --name=telnet-server -h telnet-server --restart unless-stopped -d -p 23:23 -v /etc/wikipedia-telnet-server.cfg:/app/server.cfg ballerburg9005/wikipedia-live-telnet-server:latest
 docker run --name=ollama-server -h ollama-server --restart unless-stopped --gpus all -d -v /etc/wikipedia-telnet-server.cfg:/app/server.cfg ballerburg9005/wikipedia-live-ollama-server:latest
+docker run --name=telnet-server -h telnet-server --link ollama-server --restart unless-stopped -d -p 23:23 -v /etc/wikipedia-telnet-server.cfg:/app/server.cfg ballerburg9005/wikipedia-live-telnet-server:latest
 ```
 
 ### If you run telnet-server ollama-server on different machine:
