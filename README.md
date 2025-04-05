@@ -10,6 +10,11 @@ Unfortunately I don't actually own any such vintage machines, so I tried my best
 
 Live Wikipedia is used, because the audience is expected to be very small, and free servers ship without enough space to save offline Wikipedia.
 
+## demo
+```
+telnet telnet.wiki.gd
+```
+
 ## todo
 
 * system_text in server.cfg is unused by accident
