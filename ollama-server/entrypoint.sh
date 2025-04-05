@@ -11,12 +11,12 @@ echo "[ENTRYPOINT] model=${MODEL}"
 
 if echo "$OLLAMA_URI" | grep -q "localhost"; then
     echo "[ENTRYPOINT] Starting Ollama in background..."
-    nohup /root/.ollama/bin/ollama serve >/dev/null 2>&1 &
+    nohup ollama serve >/dev/null 2>&1 &
 
     {
     sleep 12  # give it a moment to start
     echo "[ENTRYPOINT] Detected localhost, pulling model: ${MODEL}"
-    /root/.ollama/bin/ollama pull "$MODEL"
+    ollama pull "$MODEL"
     }&
 
 else
