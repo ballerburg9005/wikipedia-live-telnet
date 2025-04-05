@@ -31,23 +31,25 @@ def load_config(path=CONFIG_PATH):
     default_language = config.get("general", "default_language", fallback="en")
     ai_websocket_uri = config.get("general", "ai_websocket_uri", fallback="wss://127.0.0.1:50000/ai")
 
-    # The system_text for MULTIVAC overlay
-    system_text = config.get("general", "system_text", fallback=(
-        "System: Summaries must be in English. The name is MULTIVAC. Provide succinct answers."))
-
     # The welcome message (replace \n => \r\n at runtime)
     raw_welcome = config.get("general", "welcome_message", fallback="=== Wikipedia Telnet Gateway ===")
     welcome_msg = raw_welcome.replace("\n", "\r\n")
 
+    # AI activation
+    ai_activated_str = config.get("general", "ai_activated", fallback="true").lower()
+    ai_activated = (ai_activated_str == "true" or ai_activated_str == "1")
+
+    # [ollama]
     model = config.get("ollama", "model", fallback="smollm2:360m")
+
     return {
         "DEBUG": debug_mode,
         "PORT": port,
         "LANG": default_language,
         "AI_URI": ai_websocket_uri,
-        "SYSTEM_TEXT": system_text,
         "WELCOME_MSG": welcome_msg,
-        "MODEL": model
+        "MODEL": model,
+        "AI_ACTIVATED": ai_activated
     }
 
 def telnet_debug_print(conf, *args, **kwargs):
@@ -61,9 +63,6 @@ def telnet_debug_print(conf, *args, **kwargs):
 CONF = None
 
 def get_welcome_logo():
-    # The user wants a config-based welcome message
-    # We'll also return the old file-based approach if desired:
-    # but mostly we use CONF["WELCOME_MSG"]
     return CONF["WELCOME_MSG"]
 
 def extract_toc_and_lines(content):
@@ -124,7 +123,6 @@ def final_wrap_after_injection(lines, line_width):
     for p in paras:
         p = p.strip()
         if p:
-            # Re-wrap each paragraph at line_width
             wrapped_seg = textwrap.fill(p, width=line_width).splitlines()
             wrapped2.extend(wrapped_seg)
             wrapped2.append("")
@@ -218,8 +216,7 @@ async def stream_ai_with_spinner_and_interrupts(
         "context": article_context,
         "page_index": article_page,
         "new_question": question,
-        # Suppose we also have an auth token in config, if needed:
-        "auth_token": "AAAAB3NzaC1yc2EAAAADAQABAAABAQDBg"
+        "auth_token": "AAAAB3NzaC1yc2EAAAADAQABAAABAQDBg"  # example placeholder
     }
 
     partial_tokens = []
@@ -230,7 +227,6 @@ async def stream_ai_with_spinner_and_interrupts(
     last_token_time = asyncio.get_event_loop().time()
     spinner_index = 0
 
-    # Because user wanted wss with no cert checks, we might do:
     ssl_context = ssl.SSLContext(ssl.PROTOCOL_TLS_CLIENT)
     ssl_context.check_hostname = False
     ssl_context.verify_mode = ssl.CERT_NONE
@@ -425,9 +421,9 @@ async def show_ai_conversation_overlay(
 
         writer.write("\033[2J\033[H")
         if is_top_level:
-            writer.write("=== MULTIVAC Shell Mode ===\r\n(Type your question, q=exit)\r\n\r\n")
+            writer.write("=== AI Assistant Shell Mode ===\r\n(Type your question, q=exit)\r\n\r\n")
         else:
-            writer.write("=== MULTIVAC Assistant Overlay ===\r\n(Type your question, q=exit)\r\n\r\n")
+            writer.write("=== AI Assistant Overlay ===\r\n(Type your question, q=exit)\r\n\r\n")
         await writer.drain()
 
         if initial_question:
@@ -442,7 +438,7 @@ async def show_ai_conversation_overlay(
             question = question.strip()
 
         if question.lower() == 'q':
-            writer.write("[Exiting MULTIVAC overlay]\r\n")
+            writer.write("[Exiting AI assistant overlay]\r\n")
             await writer.drain()
             return
         if not question:
@@ -467,7 +463,7 @@ async def show_ai_conversation_overlay(
             else:
                 conversation.append({"speaker": "AI", "text": final_text})
         except Exception as e:
-            conversation.append({"speaker": "Error", "text": f"MULTIVAC connection error: {e}\nSorry MULTIVAC is offline"})
+            conversation.append({"speaker": "Error", "text": f"AI assistant connection error: {e}\nSorry MULTIVAC is offline"})
 
 async def select_option(options, writer, reader, page_size, prompt, previous_page=None):
     selected = 0
@@ -665,6 +661,17 @@ async def jump_to_next_match(article_search_state, total_pages, page_size, curre
     line_idx, _, _ = article_search_state.matches[0]
     return line_idx // page_size
 
+async def loading_dots(writer):
+    dots = ""
+    try:
+        while True:
+            dots += "."
+            writer.write(f"\rLoading{dots}\r")
+            await writer.drain()
+            await asyncio.sleep(0.1)
+    except asyncio.CancelledError:
+        pass
+
 async def paginate_article(
     conf,
     wrapped_lines, writer, reader,
@@ -692,7 +699,6 @@ async def paginate_article(
         try:
             page = wikipedia.page(title=page_title, auto_suggest=False)
         except:
-            # ignore error
             pass
 
     links = [l for l in (page.links if page else []) if len(l) > 1]
@@ -703,7 +709,6 @@ async def paginate_article(
         link_positions.clear()
         full_text = "\n".join(wrapped_lines)
         for link in links:
-            # e.g. we look for "[Some Link]" ignoring case
             rgx = re.compile(r'\[' + re.escape(link) + r'\]', re.IGNORECASE)
             for m in rgx.finditer(full_text):
                 start_line = full_text[:m.start()].count("\n")
@@ -771,10 +776,17 @@ async def paginate_article(
             for line in page_lines:
                 writer.write(line + "\r\n")
 
-            writer.write(
-                f"\r\n-- Page {page_index+1}/{total_pages} -- "
-                f"(l=next, h=prev, t=TOC, q=exit, j/k=links, Enter=next/open, s/d=search, a=MULTIVAC): "
-            )
+            # If AI is not activated, omit 'a=AI' from the prompt
+            if conf["AI_ACTIVATED"]:
+                writer.write(
+                    f"\r\n-- Page {page_index+1}/{total_pages} -- "
+                    f"(l=next, h=prev, t=TOC, q=exit, j/k=links, s/d=search, a=AI): "
+                )
+            else:
+                writer.write(
+                    f"\r\n-- Page {page_index+1}/{total_pages} -- "
+                    f"(l=next, h=prev, t=TOC, q=exit, j/k=links, s/d=search): "
+                )
             await writer.drain()
             need_reprint = False
 
@@ -801,13 +813,19 @@ async def paginate_article(
             if selected_link is not None and page:
                 # Open the link
                 link_title = page_links[selected_link][3]
-                writer.write("\033[2J\033[HLoading...\r\n")
+                writer.write("\033[2J\033[HLoading\r")
                 await writer.drain()
-
+                loading_task = asyncio.create_task(loading_dots(writer))
+    
                 try:
-                    new_page = wikipedia.page(title=link_title, auto_suggest=False)
+                    new_page = await asyncio.to_thread(wikipedia.page, title=link_title, auto_suggest=False)
                 except:
-                    writer.write("Failed to load link.\r\n")
+                    loading_task.cancel()
+                    try:
+                        await loading_task
+                    except asyncio.CancelledError:
+                        pass
+                    writer.write("\r" + clear_line() + "Failed to load link.\r\n")
                     await writer.drain()
                     need_reprint = True
                     continue
@@ -817,8 +835,16 @@ async def paginate_article(
                 sub_links = [l for l in new_page.links if len(l) > 1]
                 new_wrapped = wrap_content(new_content, line_width, sub_links)
 
-                # Directly paginate that new article
                 new_toc, new_raw = extract_toc_and_lines(new_content)
+
+                loading_task.cancel()
+                try:
+                    await loading_task
+                except asyncio.CancelledError:
+                    pass
+                writer.write("\r" + clear_line())
+                await writer.drain()
+
                 await paginate_article(
                     conf,
                     new_wrapped, writer, reader,
@@ -826,8 +852,9 @@ async def paginate_article(
                     new_raw, new_toc,
                     page_title=link_title
                 )
-                # Once done, user returns here
+
                 need_reprint = True
+
             elif page_index < total_pages - 1:
                 page_index += 1
                 selected_link = None
@@ -874,7 +901,7 @@ async def paginate_article(
                 toc_opts = [header for header, _ in toc]
                 sel = await select_option(
                     toc_opts, writer, reader, page_size,
-                    prompt="(j=down, k=up, t=back, Enter or number=select for chapter, q=cancel): ",
+                    prompt="(j=down, k=up, t=back, Enter/number=select chapter, q=cancel): ",
                     previous_page=page_index
                 )
                 if sel == TOC_GO_TO_ARTICLE_START:
@@ -912,23 +939,21 @@ async def paginate_article(
             need_reprint = True
 
         elif key.lower() == "a":
-            article_text = "\n".join(wrapped_lines)
-            await show_ai_conversation_overlay(
-                conf,
-                writer, reader,
-                article_text, page_index,
-                user_id, line_width, page_size,
-                is_top_level=False
-            )
-            need_reprint = True
+            # Only proceed if AI is activated
+            if conf["AI_ACTIVATED"]:
+                article_text = "\n".join(wrapped_lines)
+                await show_ai_conversation_overlay(
+                    conf,
+                    writer, reader,
+                    article_text, page_index,
+                    user_id, line_width, page_size,
+                    is_top_level=False
+                )
+                need_reprint = True
 
 async def configure_terminal(writer, reader, conf):
     global CONF
-    writer.write("\033[2J\033[H")
-    writer.write(get_welcome_logo() + "\r\n\r\n")
-    writer.write(f"Using AI model: {CONF['MODEL']}\r\n\r\n")  # snippet
-    writer.write("Configure your terminal:\r\n\r\n")
-
+    writer.write("\r\n==Configure your terminal==\r\n\r\n")
     writer.write("Select encoding scheme:\r\n1. ASCII\r\n2. Latin-1\r\n3. CP437\r\n4. UTF-8\r\n")
     writer.write("Enter choice [1-4] (default 1): ")
     await writer.drain()
@@ -941,9 +966,9 @@ async def configure_terminal(writer, reader, conf):
         enc = "utf-8"
     else:
         enc = "ascii"
-    writer.encoding = enc
     if hasattr(reader, 'encoding'):
         reader.encoding = enc
+    writer.encoding = enc
     writer.write(f"\r\nEncoding set to: {enc}\r\n\r\n")
 
     writer.write("Enter desired line width (default 80): ")
@@ -963,16 +988,16 @@ async def configure_terminal(writer, reader, conf):
     ps_input = await read_line_custom(writer, reader)
     writer.write("\r\n")
     try:
-        ps = int(ps_input.strip()) if ps_input.strip() else 24
+        ps = int(ps_input.strip()) if ps_input.strip() else 23
     except:
-        ps = 24
+        ps = 23
     if ps < 1:
         ps = 1
-    writer.write(f"Page size set to: {ps}\r\n\r\n")
+    writer.write(f"Page size set to: {ps+1}\r\n\r\n")
     await writer.drain()
 
     real_lw = lw - 2 if lw > 2 else 1
-    writer.write(f"Article wrapping set to {real_lw} (2 less than line width)\r\n\r\n")
+#    writer.write(f"Article wrapping set to {real_lw} (2 less than line width)\r\n\r\n")
     await writer.drain()
     return enc, real_lw, ps
 
@@ -996,7 +1021,7 @@ async def top_level_wiki_search(conf, writer, reader, query, line_width, page_si
             opts = [opt.strip() for opt in e.options]
             sel = await select_option(
                 opts, writer, reader, page_size,
-                prompt="(j=down, k=up, Enter or number=select, q=cancel): "
+                prompt="(j=down, k=up, Enter/number=select, q=cancel): "
             )
             if sel is None:
                 writer.write("\r\nCancelled.\r\n")
@@ -1019,7 +1044,7 @@ async def top_level_wiki_search(conf, writer, reader, query, line_width, page_si
             toc_opts = [header for header, _ in toc]
             sel = await select_option(
                 toc_opts, writer, reader, page_size,
-                prompt="(j=down, k=up, t=back, Enter or number=select for chapter, q=cancel): "
+                prompt="(j=down, k=up, t=back, Enter/number=select chapter, q=cancel): "
             )
             if sel == TOC_GO_TO_ARTICLE_START:
                 init_page = 0
@@ -1049,14 +1074,39 @@ async def shell(reader, writer):
     if hasattr(writer, 'set_echo'):
         writer.set_echo(False)
 
+    writer.write("\033[2J\033[H")
+    writer.write(get_welcome_logo() + "\r\n\r\n")
+
+    # Only display AI model if AI is activated
+    if CONF["AI_ACTIVATED"]:
+        writer.write(f"Using AI model: {CONF['MODEL']}\r\n\r\n")
+
+    # CAPTCHA before anything else
+    writer.write("Captcha: Repeat the first spacecraft to land on another planet three times.\r\nAnswer: ")
+    await writer.drain()
+    captcha_input = await read_line_custom(writer, reader)
+    if captcha_input.lower().count("venera") != 3:
+        writer.write("Access denied. Invalid response.\r\n")
+        await writer.drain()
+        writer.close()
+        return
+
     enc, article_width, page_size = await configure_terminal(writer, reader, CONF)
-    shell_mode = "wiki"
-    writer.write("Commands: :ai, :wiki, :help, :quit.\r\n")
-    writer.write(f"Article wrapping: {article_width}, page_size: {page_size}\r\n\r\n")
+
+    # If AI is activated, show both commands, otherwise only wiki
+    if CONF["AI_ACTIVATED"]:
+        writer.write("Commands: :ai, :wiki, :help, :quit.\r\n")
+    else:
+        writer.write("Commands: :wiki, :help, :quit.\r\n")
+
+    writer.write(f"Article wrapping: {article_width}, page_size: {page_size+1}\r\n\r\n")
     await writer.drain()
 
+    # Default shell mode
+    shell_mode = "wiki"
+
     while True:
-        prompt = "Wiki> " if shell_mode == "wiki" else "MULTIVAC> "
+        prompt = "Wiki> " if shell_mode == "wiki" else "AI> "
         writer.write(prompt)
         await writer.drain()
 
@@ -1070,43 +1120,66 @@ async def shell(reader, writer):
         if cmd.startswith(":"):
             parts = cmd.split()
             c = parts[0].lower()
+
             if c == ":quit":
                 writer.write("Goodbye!\r\n")
                 await writer.drain()
                 break
+
             elif c == ":ai":
-                shell_mode = "ai"
-                writer.write("[Switched to MULTIVAC mode]\r\n")
-                await writer.drain()
+                if not CONF["AI_ACTIVATED"]:
+                    writer.write("[AI not available]\r\n")
+                    await writer.drain()
+                else:
+                    shell_mode = "ai"
+                    writer.write("[Switched to AI mode]\r\n")
+                    await writer.drain()
+
             elif c == ":wiki":
                 shell_mode = "wiki"
                 writer.write("[Switched to Wiki mode]\r\n")
                 await writer.drain()
+
             elif c == ":help":
-                writer.write("(In Wiki mode, type text => search. In MULTIVAC mode => conversation. :quit => exit)\r\n")
-                writer.write("During article reading, press 'a' => MULTIVAC overlay w/ context.\r\n")
-                writer.write("Use 's' or 'd' for internal search, 't' for TOC, etc.\r\n")
+                if shell_mode == "wiki":
+                    writer.write("(In Wiki mode, type text => search. :quit => exit)\r\n")
+                    if CONF["AI_ACTIVATED"]:
+                        writer.write("During article reading, press 'a' => AI assistant overlay w/ context.\r\n")
+                    writer.write("Use 's' or 'd' for internal search, 't' for TOC, etc.\r\n")
+                else:
+                    # If AI is activated, explain usage. Otherwise, just say it's disabled.
+                    if CONF["AI_ACTIVATED"]:
+                        writer.write("(In AI mode, type text => conversation. :quit => exit)\r\n")
+                    else:
+                        writer.write("AI is disabled.\r\n")
                 await writer.drain()
+
             else:
                 writer.write("[Unknown command]\r\n")
                 await writer.drain()
+
             continue
 
         if shell_mode == "wiki":
             await top_level_wiki_search(CONF, writer, reader, cmd, article_width, page_size)
         else:
-            user_id = "top-level-ai-user"
-            await show_ai_conversation_overlay(
-                CONF,
-                writer, reader,
-                article_text="",
-                article_page=0,
-                user_id=user_id,
-                line_width=article_width,
-                page_size=page_size,
-                is_top_level=True,
-                initial_question=cmd
-            )
+            # Only proceed if AI is actually activated
+            if CONF["AI_ACTIVATED"]:
+                user_id = "top-level-ai-user"
+                await show_ai_conversation_overlay(
+                    CONF,
+                    writer, reader,
+                    article_text="",
+                    article_page=0,
+                    user_id=user_id,
+                    line_width=article_width,
+                    page_size=page_size,
+                    is_top_level=True,
+                    initial_question=cmd
+                )
+            else:
+                writer.write("[AI not available]\r\n")
+                await writer.drain()
 
     writer.close()
 
