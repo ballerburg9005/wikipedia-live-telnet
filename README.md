@@ -28,7 +28,7 @@ It would be nice if someone could host this with more compute power for AI assis
 
 * system_text in server.cfg is unused by accident
 * currently there is a bug that sometimes causes 60% CPU utilization idle
-* in development: navigation keys don't work while the client still receives text
+* in development: navigation keys don't work instantly to interrupt while the client still receives text
 * in development: guestbook
 * in development: various other improvements
 
