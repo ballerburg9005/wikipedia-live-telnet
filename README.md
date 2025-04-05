@@ -180,6 +180,13 @@ Chinese (Simplified) and others by saying "What is [language]?"
 
 -- Page 1/1 -- (Enter/l/q=exit, h=prev):
 ```
+## Development
+
+If you change server.py use this at the end of your first query. I worked with Grok-3, o1 and i3-mini-high.
+
+```
+Lastly I must tell you, please please do not fuck up the navigation and pagination logic in this program, like replacing q with Enter etc randomly or dumping output instead of paginating: this is great great SHIT. It was crafted with great care, so that it displays on old CP/M machines correctly, which have no scrollback buffer and no UTF-8 etc. and like baud 3200 so we are doing precise updates of single characters often. I say this because previous AI easily fucked this up and I had to scold them hard for it and start over from scratch. Also in telnet you need to replace \n with \r\n so the lines break properly, remember that, it is mostly done already in the code.
+```
 
 ## License
 GPLv3
