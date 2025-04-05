@@ -34,15 +34,15 @@ Make sure to change firewall to allow port 23 and ollama-server port (default:50
 
 ### If you run telnet server and ollama-server on same machine:
 ```
-docker run -name=telnet-server --restart unless-stopped -d -p 23:23 -v /etc/wikipedia-telnet-server.cfg:/app/server.cfg ballerburg9005/wikipedia-live-telnet-server
-docker run --name=ollama-server --restart unless-stopped --gpus all -d -v /etc/wikipedia-telnet-server.cfg:/app/server.cfg ballerburg9005/wikipedia-live-ollama-server
+docker run -name=telnet-server --restart unless-stopped -d -p 23:23 -v /etc/wikipedia-telnet-server.cfg:/app/server.cfg ballerburg9005/wikipedia-live-telnet-server:latest
+docker run --name=ollama-server --restart unless-stopped --gpus all -d -v /etc/wikipedia-telnet-server.cfg:/app/server.cfg ballerburg9005/wikipedia-live-ollama-server:latest
 ```
 
 ### If you run telnet-server ollama-server on different machine:
 **Change at minimum auth_token and ai_websocket_uri .**
 ```
-Machine A> docker run --restart unless-stopped -d -p 23:23 -v /etc/wikipedia-telnet-server.cfg:/app/server.cfg ballerburg9005/wikipedia-live-telnet-server
-Machine B> docker run --restart unless-stopped -d -p 50000:50000 --gpus all -v /etc/wikipedia-telnet-server.cfg:/app/server.cfg ballerburg9005/wikipedia-live-ollama-server
+Machine A> docker run --restart unless-stopped -d -p 23:23 -v /etc/wikipedia-telnet-server.cfg:/app/server.cfg ballerburg9005/wikipedia-live-telnet-server:latest
+Machine B> docker run --restart unless-stopped -d -p 50000:50000 --gpus all -v /etc/wikipedia-telnet-server.cfg:/app/server.cfg ballerburg9005/wikipedia-live-ollama-server:latest
 ```
 
 ### If you run ollama outside of docker container:
