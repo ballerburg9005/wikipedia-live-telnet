@@ -10,7 +10,7 @@ Live Wikipedia is used, because the audience is expected to be very small, and f
 ### State of development
 
 * Wikipedia browser: tested and working but alpha-ish in terms of actual vintage devices
-* AI assistant: basic integration is done, but zero testing if more poweful model actually produces useful output.
+* AI assistant: basic integration is done, but zero testing if more poweful model actually produces useful output (likely needs work).
 
 ## hosted service
 
