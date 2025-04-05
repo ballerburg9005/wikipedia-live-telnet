@@ -1,19 +1,28 @@
 # wikipedia-live-telnet
 paginated telnet browser for live Wikipedia with integrated AI assistant
 
-* State of development: alpha-ish
-* State of demo: Guaranteed to work indefinitely, but the AI agent is unusably dumb due to Oracle Cloud Forever Free constraints.
-
 The goal of this project is to make Wikipedia and general information from the Internet available via Wikipedia API plus an AI assistant who simply reads Wikipedia article or search results to answer queries. This is mainly interesting to people using vintage pre-DOS-era machines, like CP/M Osborne-1 or C64.
 
 Unfortunately I don't actually own any such vintage machines, so I tried my best to optimize to code to baud rate constraints, screen sizes and encoding formats of the time.
 
 Live Wikipedia is used, because the audience is expected to be very small, and free servers ship without enough space to save offline Wikipedia.
 
-## demo
+### State of development
+
+* Wikipedia browser: tested and working but alpha-ish in terms of actual vintage devices
+* AI assistant: basic integration is done, but zero testing if more poweful model actually produces useful output.
+
+## hosted service
+
 ```
 telnet telnet.wiki.gd
 ```
+
+The service is guaranteed to work indefinitely, due to being hosted on Oracle Cloud Forever Free tier. 
+
+However the resulting lack of compute makes the AI agent too weak to be actually useful.
+
+It would be nice if someone could host this with more compute power for AI assistant. Given there is some demand I can develop the assistant to work better with more powerful model (in the realms of 8GB or 16GB).
 
 ## todo
 
