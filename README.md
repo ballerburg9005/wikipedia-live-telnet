@@ -27,6 +27,7 @@ It would be nice if someone could host this with more compute power for AI assis
 ## todo
 
 * system_text in server.cfg is unused by accident
+* currently there is a bug that sometimes causes 60% CPU utilization idle
 
 ## general guide running
 
