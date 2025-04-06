@@ -172,17 +172,28 @@ of-message mark for transmissions requesting assistance when loss of life or
 
 #### Paginated chatlog with AI agent (after token-by-token output):
 ```
-You> What is the weather?
+You> what is Morse code?
 
-MULTIVAC> [User cleared partial response]
+MULTIVAC> Morse code is a method of transmitting text information as a series
+of on-off tones, lights, or clicks that can be directly understood by a
+skilled listener without special equipment. It was invented by Samuel Morse
+and Alfred Vail in the 1830s and has been used for communication over long
+distances, particularly in situations where other means of communication are
+not available or practical.    In Morse code, each letter and number is
+represented by a unique sequence of short (dot) and long (dash) elements. For
+example, the letter "S" is represented by three dots, while the letter "O" is
+represented by three dashes. The sequence "SOS" is a well-known distress
+signal used internationally to indicate an urgent need for help, particularly
+in maritime contexts.
 
 You> when did the SOS signal become international standard?
 
 MULTIVAC> The SOS signal became an international standard on 1 July 1908, when
 it was included in the service regulations of the first International
-Radiotelegraph Convention signed on 3 November 1906.
+Radiotelegraph Convention signed on 3 November 1906. The convention became
+effective on that date.
 
--- Page 1/1 -- (Enter/l/q=exit, h=prev): 
+-- Page 1/1 -- (Enter/l/q=exit, h=prev):
 ```
 ## Development
 
