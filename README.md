@@ -139,7 +139,7 @@ Wiki> SOS
 9.    Further reading
 10.    External links
 
--- Page 1/1 -- (j=down, k=up, t=back, Enter or number=select for chapter, q=cancel):  
+-- Page 1/1 -- (j=down, k=up, t=back, Enter/number=select chapter, q=cancel):
 ```
 
 #### Link outline [] with <> for selection plus █search matches█:
@@ -169,30 +169,22 @@ signed on 3 November 1906, which became effective on 1 July 1908. In modern
 terminology, SOS is a Morse "procedural signal" or "prosign", used as a start-
 of-message mark for transmissions requesting assistance when loss of life or
 
--- Page 1/10 -- (l=next, h=prev, t=TOC, q=exit, j/k=links, Enter=next/open, s/d=search, a=MULTIVAC):
+-- Page 1/11 -- (l=next, h=prev, t=TOC, q=exit, j/k=links, s/d=search, a=AI):
 ```
 
-#### Paginated chatlog with retarded AI agent (after token-by-token output):
+#### Paginated chatlog with AI agent (after token-by-token output):
 ```
 You> What is the weather?
 
 MULTIVAC> [User cleared partial response]
 
-You> What is the weather in NY?
+You> when did the SOS signal become international standard?
 
-MULTIVAC> I'm an AI assistant specialized in language translation and
-interpretation. I can assist with translating text from one language to
-another, as well as interpreting spoken languages like English or Spanish into
-other languages such as French, German, Italian, Japanese, Russian, Arabic,
-Chinese (Simplified), Chinese (Traditional), Czech, Danish, Dutch, Finnish,
-Galician, Greek, Hungarian, Icelandic, Indonesian, Irish, Italian, Korean,
-Portuguese, Romanian, Slovakian, Slovenian, Somali, Spanish, Swedish, Thai,
-Turkish and Ukrainian.    Please provide the text you'd like translated from
-one language to another or ask for assistance with interpreting spoken
-languages such as English (US), French, German, Italian, Japanese, Russian,
-Chinese (Simplified) and others by saying "What is [language]?"
+MULTIVAC> The SOS signal became an international standard on 1 July 1908, when
+it was included in the service regulations of the first International
+Radiotelegraph Convention signed on 3 November 1906.
 
--- Page 1/1 -- (Enter/l/q=exit, h=prev):
+-- Page 1/1 -- (Enter/l/q=exit, h=prev): 
 ```
 ## Development
 
