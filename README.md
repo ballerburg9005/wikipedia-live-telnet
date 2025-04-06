@@ -31,6 +31,8 @@ It would be nice if someone could host this with more compute power for AI assis
 * in development: navigation keys don't work instantly to interrupt while the client still receives text
 * in development: guestbook
 * in development: various other improvements
+* integrate powerful free models from Openrouter.ai properly 
+* implement ability for users to paste models and API keys from Openrouter.ai, perhaps store them with user accounts
 
 ## general guide running
 
