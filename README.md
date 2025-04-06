@@ -117,8 +117,6 @@ Enter desired page size (default 24):
 
 Page size set to: 24
 
-Article wrapping set to 78 (2 less than line width)
-
 Commands: :ai, :wiki, :help, :quit.
 Article wrapping: 78, page_size: 24
 
