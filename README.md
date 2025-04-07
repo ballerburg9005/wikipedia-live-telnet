@@ -24,7 +24,7 @@ The service is guaranteed to work indefinitely, due to being hosted on Oracle Cl
 
 * navigation keys don't work instantly to interrupt while the client still receives text (maybe impossible)
 
-* in testing branch: guestbook, various other improvements, system_text in server.cfg was unused by accident, and auth token hardcoded and not being read from config
+* in testing branch: guestbook, various other improvements, system_text in server.cfg was unused by accident, and auth token hardcoded to AAAAB3NzaC1yc2EAAAADAQABAAABAQDBg and not being read from config
 
 * needs observation: there was a bug that sometimes caused 60% CPU utilization idle, probably related to python/package versions
 
