@@ -33,6 +33,8 @@ The service is guaranteed to work indefinitely, due to being hosted on Oracle Cl
 * ASCII mode displays unicode characters
 * no testing done on 40x16
 * the links seem to sometimes rarely be indentified wrong, such as [tex]t
+* implement proper communication between ollama and telnet server for clearing RAG-triggering message, instead of clear-screen escape sequence hack.
+
 
 ## general guide running
 
