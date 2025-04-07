@@ -20,6 +20,8 @@ telnet telnet.wiki.gd
 
 The service is guaranteed to work indefinitely, due to being hosted on Oracle Cloud Forever Free tier and AI assistant via free Openrouter.ai.
 
+For some reason as of right now search does not trigger for AI, very strange. TODO fix.
+
 ## todo
 
 * navigation keys don't work instantly to interrupt while the client still receives text (maybe impossible)
