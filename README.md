@@ -188,7 +188,7 @@ effective on that date.
 ```
 ## Development
 
-# use the testing branch for any PRs!
+# use the "testing" branch for any PRs!
 
 If you change server.py use this at the end of your first query. I worked with Grok-3, o1 and i3-mini-high:
 ```
