@@ -28,7 +28,7 @@ The service is guaranteed to work indefinitely, due to being hosted on Oracle Cl
 
 * needs observation: there was a bug that sometimes caused 60% CPU utilization idle, probably related to python/package versions
 
-* For some reason as of right now search does not trigger for AI, very strange. TODO fix.
+* For some reason as of right now search does not trigger in production server but triggers at home, very strange. 
 
 ## general guide running
 
