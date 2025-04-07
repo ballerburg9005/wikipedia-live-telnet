@@ -10,7 +10,7 @@ Live Wikipedia is used, because the audience is expected to be very small, and f
 ### State of development
 
 * Wikipedia browser: tested and working but alpha-ish in terms of actual vintage devices
-* AI assistant: Not tested a lot but seems to work well. Using it to query scraped information from websites is a mixed bag though.
+* AI assistant: Not tested a lot but seems to work well. Using it to query scraped information from websites is a mixed bag though because there is so much garbage text on websites and no embedding model to filter.
 
 ## hosted service
 
