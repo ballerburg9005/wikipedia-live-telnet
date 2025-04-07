@@ -10,7 +10,7 @@ Live Wikipedia is used, because the audience is expected to be very small, and f
 ### State of development
 
 * Wikipedia browser: tested and working but alpha-ish in terms of actual vintage devices
-* AI assistant: basic integration is done, but zero testing if more poweful model actually produces useful output (likely needs work).
+* AI assistant: Not tested a lot but seems to work well. Using it to query scraped information from websites is a mixed bag though.
 
 ## hosted service
 
@@ -18,21 +18,16 @@ Live Wikipedia is used, because the audience is expected to be very small, and f
 telnet telnet.wiki.gd
 ```
 
-The service is guaranteed to work indefinitely, due to being hosted on Oracle Cloud Forever Free tier. 
-
-However the resulting lack of compute makes the AI agent too weak to be actually useful.
-
-It would be nice if someone could host this with more compute power for AI assistant. Given there is some demand I can develop the assistant to work better with more powerful model (in the realms of 8GB or 16GB).
+The service is guaranteed to work indefinitely, due to being hosted on Oracle Cloud Forever Free tier and AI assistant via free Openrouter.ai.
 
 ## todo
 
-* system_text in server.cfg is unused by accident
-* currently there is a bug that sometimes causes 60% CPU utilization idle
-* in development: navigation keys don't work instantly to interrupt while the client still receives text
-* in development: guestbook
-* in development: various other improvements
-* integrate powerful free models from Openrouter.ai properly 
-* implement ability for users to paste models and API keys from Openrouter.ai, perhaps store them with user accounts
+* navigation keys don't work instantly to interrupt while the client still receives text (maybe impossible)
+
+* not on Github yet: guestbook, various other improvements
+* fixed but not on Github: system_text in server.cfg is unused by accident
+  
+* needs observation: there was a bug that sometimes caused 60% CPU utilization idle, probably related to python/package versions
 
 ## general guide running
 
