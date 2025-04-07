@@ -200,5 +200,107 @@ Crude simulation of 1200 baud:
 stdbuf -o0 telnet telnet.wiki.gd | pv -qL 120
 ```
 
+Better crude simulation of 1200 baud:
+```
+#!/usr/bin/env python3
+import os
+import pty
+import asyncio
+import sys
+import tty
+import termios
+import signal
+
+# Delay per character in seconds (approx. 1200 baud)
+DELAY = 0.0083
+
+async def forward_data(reader, writer):
+    """Read one byte at a time from reader, write to writer, then delay."""
+    while True:
+        data = await reader.read(1)
+        if not data:
+            break
+        writer.write(data)
+        writer.flush()
+        await asyncio.sleep(DELAY)
+
+async def main():
+    # Open a PTY pair: master_fd for parent, slave_fd for child.
+    master_fd, slave_fd = pty.openpty()
+
+    pid = os.fork()
+    if pid == 0:
+        # Child process: make the slave the controlling terminal.
+        os.setsid()
+        os.dup2(slave_fd, 0)
+        os.dup2(slave_fd, 1)
+        os.dup2(slave_fd, 2)
+        os.close(master_fd)
+        os.close(slave_fd)
+        # Exec Telnet connecting to the remote host.
+        os.execvp("telnet", ["telnet", "localhost"])
+    else:
+        # Parent process: close the slave side.
+        os.close(slave_fd)
+
+        # Save original terminal settings and set sys.stdin to raw mode.
+        orig_settings = termios.tcgetattr(sys.stdin)
+        tty.setraw(sys.stdin.fileno())
+
+        loop = asyncio.get_running_loop()
+
+        # Wrap master file descriptor as binary file objects.
+        master_r = os.fdopen(master_fd, "rb", buffering=0)
+        master_w = os.fdopen(master_fd, "wb", buffering=0)
+
+        # Create asyncio StreamReaders for the master PTY and sys.stdin.
+        reader_master = asyncio.StreamReader()
+        protocol_master = asyncio.StreamReaderProtocol(reader_master)
+        await loop.connect_read_pipe(lambda: protocol_master, master_r)
+
+        reader_stdin = asyncio.StreamReader()
+        protocol_stdin = asyncio.StreamReaderProtocol(reader_stdin)
+        await loop.connect_read_pipe(lambda: protocol_stdin, sys.stdin)
+
+        # Define async tasks for bidirectional forwarding.
+        async def master_to_stdout():
+            while True:
+                data = await reader_master.read(1)
+                if not data:
+                    break
+                sys.stdout.buffer.write(data)
+                sys.stdout.buffer.flush()
+                await asyncio.sleep(DELAY)
+
+        async def stdin_to_master():
+            while True:
+                data = await reader_stdin.read(1)
+                if not data:
+                    break
+                master_w.write(data)
+                master_w.flush()
+                await asyncio.sleep(DELAY)
+
+        # Run both tasks concurrently.
+        await asyncio.gather(
+            master_to_stdout(),
+            stdin_to_master(),
+        )
+
+        # Restore original terminal settings.
+        termios.tcsetattr(sys.stdin, termios.TCSADRAIN, orig_settings)
+
+        # Wait for the child (telnet) process to exit.
+        os.waitpid(pid, 0)
+
+if __name__ == "__main__":
+    try:
+        asyncio.run(main())
+    except KeyboardInterrupt:
+        # Ensure terminal settings are restored if interrupted.
+        termios.tcsetattr(sys.stdin, termios.TCSADRAIN, termios.tcgetattr(sys.stdin))
+        sys.exit(0)
+```
+
 ## License
 GPLv3
