@@ -155,7 +155,7 @@ terminology, SOS is a Morse "procedural signal" or "prosign", used as a start-
 -- Page 1/11 -- (h/l=prev/next, t=TOC, j/k=links, q(w)=exit, s/d/f=search, a=AI): 
 ```
 
-#### Paginated chatlog with AI agent (after token-by-token output):
+#### Paginated chatlog with AI agent on Wikpedia article (after token-by-token output):
 ```
 You> what is Morse code?
 
