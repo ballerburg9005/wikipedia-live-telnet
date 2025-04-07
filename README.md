@@ -32,7 +32,7 @@ The service is guaranteed to work indefinitely, due to being hosted on Oracle Cl
 * Superquit (w) does not work properly
 * ASCII mode displays unicode characters
 * no testing done on 40x12
-* the links seem to sometimes rarely be indentified wrong, such as te[lecommun]ication
+* the links seem to sometimes rarely be indentified wrong, such as [tex]t
 
 ## general guide running
 
