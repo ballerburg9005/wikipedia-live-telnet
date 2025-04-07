@@ -9,7 +9,7 @@ Live Wikipedia is used, because the audience is expected to be very small, and f
 ### State of development
 
 * Wikipedia browser: tested and working but alpha-ish in terms of actual vintage devices
-* AI assistant: Not tested a lot but seems to work well. Using it to query scraped information from websites is a mixed bag though because there is so much garbage text on websites and no embedding model to filter.
+* AI assistant: Not tested a lot but seems to be usable. Using it to query scraped information from websites is a mixed bag though because there is so much garbage text on websites and no embedding model to filter.
 
 ## hosted service
 
@@ -27,7 +27,9 @@ The service is guaranteed to work indefinitely, due to being hosted on Oracle Cl
 
 * needs observation: there was a bug that sometimes caused 60% CPU utilization idle, probably related to python/package versions
 
-* For some reason as of right now search does not trigger in production server but triggers at home, very strange. 
+* For some reason as of right now search does not trigger in production server but triggers at home, very strange.
+
+* Superquit (w) does not work properly
 
 ## general guide running
 
