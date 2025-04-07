@@ -10,7 +10,7 @@ Live Wikipedia is used, because the audience is expected to be very small, and f
 ### State of development
 
 * Wikipedia browser: tested and working but alpha-ish in terms of actual vintage devices
-* AI assistant: basic integration is done, but zero testing if more poweful model actually produces useful output (likely needs work).
+* AI assistant: Not tested a lot but seems to work well. Using it to query scraped information from websites is a mixed bag though because there is so much garbage text on websites and no embedding model to filter.
 
 ## hosted service
 
@@ -18,21 +18,15 @@ Live Wikipedia is used, because the audience is expected to be very small, and f
 telnet telnet.wiki.gd
 ```
 
-The service is guaranteed to work indefinitely, due to being hosted on Oracle Cloud Forever Free tier. 
-
-However the resulting lack of compute makes the AI agent too weak to be actually useful.
-
-It would be nice if someone could host this with more compute power for AI assistant. Given there is some demand I can develop the assistant to work better with more powerful model (in the realms of 8GB or 16GB).
+The service is guaranteed to work indefinitely, due to being hosted on Oracle Cloud Forever Free tier and AI assistant via free Openrouter.ai.
 
 ## todo
 
-* system_text in server.cfg is unused by accident
-* currently there is a bug that sometimes causes 60% CPU utilization idle
-* in development: navigation keys don't work instantly to interrupt while the client still receives text
-* in development: guestbook
-* in development: various other improvements
-* integrate powerful free models from Openrouter.ai properly 
-* implement ability for users to paste models and API keys from Openrouter.ai, perhaps store them with user accounts
+* navigation keys don't work instantly to interrupt while the client still receives text (maybe impossible)
+
+* not on Github yet: guestbook, various other improvements, system_text in server.cfg is unused by accident
+
+* needs observation: there was a bug that sometimes caused 60% CPU utilization idle, probably related to python/package versions
 
 ## general guide running
 
@@ -94,30 +88,22 @@ Host  Machine: zcat wikipedia-live-ollama-server.gz | docker load
 
 #### Terminal customizations and UI:
 ```
-Telnet Live Wikipedia with (dumb) AI running on Oracle Cloud Free Tier
 
-Using AI model: smollm2:360m
+=======================================
+Telnet Live Wikipedia with AI assistant
+telnet.wiki.gd
+=======================================
 
-Configure your terminal:
+AI model: mistralai/mistral-7b-instruct:free
+Software wikipedia-live-telnet:
+https://github.com/ballerburg9005/wikipedia-live-telnet
 
-Select encoding scheme:
-1. ASCII
-2. Latin-1
-3. CP437
-4. UTF-8
-Enter choice [1-4] (default 1): 
+========Configure your terminal========
+Terminal size (cols x rows) [80x24]: 80x24
+Terminal type [dumb]: dumb
+Character set [ASCII]: ASCII
 
-Encoding set to: ascii
-
-Enter desired line width (default 80): 
-
-Line width set to: 80
-
-Enter desired page size (default 24): 
-
-Page size set to: 24
-
-Commands: :ai, :wiki, :help, :quit.
+Commands: :ai, :wiki, :guestbook, :help, :quit.
 Article wrapping: 78, page_size: 24
 
 Wiki> SOS
@@ -137,7 +123,7 @@ Wiki> SOS
 9.    Further reading
 10.    External links
 
--- Page 1/1 -- (j=down, k=up, t=back, Enter/number=select chapter, q=cancel):
+-- Page 1/1 -- (h/l=prev/next, j/k=chapter, t=exit-TOC, q(w)=exit): 
 ```
 
 #### Link outline [] with <> for selection plus █search matches█:
@@ -147,7 +133,7 @@ internationally, originally established for maritime use. In formal notation
 SOS is written with an overscore line (SOS), to indicate that the [█Morse code█]
 equivalents for the individual letters of "SOS" are transmitted as an unbroken
 sequence of three dots / three dashes / three dots, with no spaces between the
-letters. In <International █Morse Code█> three dots form the letter "S" and
+letters. In [International █Morse Code█] three dots form the letter "S" and
 three dashes make the letter "O", so "S O S" became a common way to remember
 the order of the dots and dashes. IWB, VZE, 3B, and V7 form equivalent
 sequences, but traditionally SOS is the easiest to remember.
@@ -165,12 +151,11 @@ effective 1 April 1905. It became a worldwide standard when it was included in
 the service regulations of the first International Radiotelegraph Convention
 signed on 3 November 1906, which became effective on 1 July 1908. In modern
 terminology, SOS is a Morse "procedural signal" or "prosign", used as a start-
-of-message mark for transmissions requesting assistance when loss of life or
 
--- Page 1/11 -- (l=next, h=prev, t=TOC, q=exit, j/k=links, s/d=search, a=AI):
+-- Page 1/11 -- (h/l=prev/next, t=TOC, j/k=links, q(w)=exit, s/d/f=search, a=AI): 
 ```
 
-#### Paginated chatlog with AI agent (after token-by-token output):
+#### Paginated chatlog with AI agent on Wikpedia article (after token-by-token output):
 ```
 You> what is Morse code?
 
@@ -209,3 +194,4 @@ stdbuf -o0 telnet telnet.wiki.gd | pv -qL 120
 
 ## License
 GPLv3
+
