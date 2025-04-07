@@ -314,7 +314,7 @@ async def configure_terminal(writer, reader, conf):
         writer.write("\r\nTerminal type [dumb]: ")
         await writer.drain()
     except (BrokenPipeError, ConnectionError):
-        return "ascii", cols, rows - 1
+        return "ascii", cols, rows - 2
     term_type = await read_line_custom(writer, reader)
     if not term_type.strip():
         term_type = "dumb"
@@ -322,7 +322,7 @@ async def configure_terminal(writer, reader, conf):
             writer.write("dumb")
             await writer.drain()
         except (BrokenPipeError, ConnectionError):
-            return "ascii", cols, rows - 1
+            return "ascii", cols, rows - 2
     if term_type.lower() != "dumb":
         try:
             writer.write("\r\nValid option is: dumb\r\nTerminal type [dumb]: ")
@@ -337,12 +337,12 @@ async def configure_terminal(writer, reader, conf):
                 await writer.drain()
                 term_type = "dumb"
         except (BrokenPipeError, ConnectionError):
-            return "ascii", cols, rows - 1
+            return "ascii", cols, rows - 2
     try:
         writer.write("\r\nCharacter set [ASCII]: ")
         await writer.drain()
     except (BrokenPipeError, ConnectionError):
-        return "ascii", cols, rows - 1
+        return "ascii", cols, rows - 2
     enc_choice = await read_line_custom(writer, reader)
     if not enc_choice.strip():
         enc_choice = "ASCII"
@@ -350,7 +350,7 @@ async def configure_terminal(writer, reader, conf):
             writer.write("ASCII")
             await writer.drain()
         except (BrokenPipeError, ConnectionError):
-            return "ascii", cols, rows - 1
+            return "ascii", cols, rows - 2
     valid_encodings = {"ascii": "ascii", "latin-1": "latin-1", "cp437": "cp437", "utf-8": "utf-8"}
     enc = valid_encodings.get(enc_choice.lower(), None)
     if not enc:
@@ -368,7 +368,7 @@ async def configure_terminal(writer, reader, conf):
                 await writer.drain()
                 enc = "ascii"
         except (BrokenPipeError, ConnectionError):
-            return "ascii", cols, rows - 1
+            return "ascii", cols, rows - 2
     if hasattr(reader, 'encoding'):
         reader.encoding = enc
     writer.encoding = enc
@@ -377,8 +377,8 @@ async def configure_terminal(writer, reader, conf):
         writer.write(f"Article wrapping: {cols-2 if cols > 2 else 1}, page_size: {rows}\r\n\r\n")
         await writer.drain()
     except (BrokenPipeError, ConnectionError):
-        return enc, cols - 2 if cols > 2 else 1, rows - 1
-    return enc, cols - 2 if cols > 2 else 1, rows - 1
+        return enc, cols - 2 if cols > 2 else 1, rows - 2
+    return enc, cols - 2 if cols > 2 else 1, rows - 2
 
 # --------------------- ARTICLE SEARCH FUNCTIONS ---------------------
 
@@ -602,7 +602,7 @@ async def paginate_article(
                     writer.write(line + "\r\n")
                 prompt = (
                     f"\r\n-- Page {page_index+1}/{total_pages} -- "
-                    f"(h/l=prev/next, t=TOC, j/k=links, q(w)=exit, s/d/f=search"
+                    f"(hjkl=nav, t=TOC, q(w)=exit, s/d/f=search"
                     f"{', a=AI' if conf['AI_ACTIVATED'] else ''}): {digit_buffer}"
                 )
                 writer.write(prompt)
@@ -619,7 +619,7 @@ async def paginate_article(
             digit_buffer += key
             try:
                 writer.write(f"\r{clear_line()}-- Page {page_index+1}/{total_pages} -- "
-                            f"(h/l=prev/next, t=TOC, j/k=links, q(w)=exit, s/d/f=search"
+                            f"(hjkl=nav, t=TOC, q(w)=exit, s/d/f=search"
                             f"{', a=AI' if conf['AI_ACTIVATED'] else ''}): {digit_buffer}")
                 await writer.drain()
             except (BrokenPipeError, ConnectionError):
@@ -735,7 +735,7 @@ async def paginate_article(
 
         elif key == "t" and toc:
             toc_opts = [header for header, _ in toc]
-            sel = await select_option(toc_opts, writer, reader, page_size, "(h/l=prev/next, j/k=chapters, t=exit-TOC, q(w)=exit): ", page_index, is_toc=True)
+            sel = await select_option(toc_opts, writer, reader, page_size, "(hjkl=nav, t=exit-TOC, q(w)=exit): ", page_index, is_toc=True)
             if sel == "superquit":
                 return True
             if sel == TOC_GO_TO_ARTICLE_START:
@@ -838,7 +838,7 @@ async def stream_ai_with_spinner_and_interrupts(
             async with websockets.connect(uri, ping_interval=None, ssl=ssl_context) as ws:
                 await ws.send(json.dumps(payload))
                 try:
-                    writer.write("MULTIVAC> ")
+                    writer.write("MULTIVAC>\r\n")
                     await writer.drain()
                 except (BrokenPipeError, ConnectionError):
                     stop_flag = True
@@ -1367,7 +1367,7 @@ async def top_level_wiki_search(conf, writer, reader, query, line_width, page_si
         init_page = 0
         if toc:
             toc_opts = [header for header, _ in toc]
-            sel = await select_option(toc_opts, writer, reader, page_size, "(h/l=prev/next, j/k=chapter, t=exit-TOC, q(w)=exit): ", init_page, is_toc=True)
+            sel = await select_option(toc_opts, writer, reader, page_size, "(hjkl=nav, t=exit-TOC, q(w)=exit): ", init_page, is_toc=True)
             if sel == "superquit":
                 return True
             if sel == TOC_GO_TO_ARTICLE_START:
@@ -1455,7 +1455,7 @@ async def select_option(options, writer, reader, page_size, prompt, previous_pag
             digit_buffer += key
             try:
                 writer.write(cursor_up(1) + cursor_carriage_return() + clear_line())
-                writer.write(f"-- Page {page_index+1}/{total_pages} -- {prompt} {digit_buffer}")
+                writer.write(f"\r\n-- Page {page_index+1}/{total_pages} -- {prompt} {digit_buffer}")
                 await writer.drain()
             except (BrokenPipeError, ConnectionError):
                 return None
