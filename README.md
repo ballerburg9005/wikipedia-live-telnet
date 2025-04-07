@@ -88,30 +88,22 @@ Host  Machine: zcat wikipedia-live-ollama-server.gz | docker load
 
 #### Terminal customizations and UI:
 ```
-Telnet Live Wikipedia with (dumb) AI running on Oracle Cloud Free Tier
 
-Using AI model: smollm2:360m
+=======================================
+Telnet Live Wikipedia with AI assistant
+telnet.wiki.gd
+=======================================
 
-Configure your terminal:
+AI model: mistralai/mistral-7b-instruct:free
+Software wikipedia-live-telnet:
+https://github.com/ballerburg9005/wikipedia-live-telnet
 
-Select encoding scheme:
-1. ASCII
-2. Latin-1
-3. CP437
-4. UTF-8
-Enter choice [1-4] (default 1): 
+========Configure your terminal========
+Terminal size (cols x rows) [80x24]: 80x24
+Terminal type [dumb]: dumb
+Character set [ASCII]: ASCII
 
-Encoding set to: ascii
-
-Enter desired line width (default 80): 
-
-Line width set to: 80
-
-Enter desired page size (default 24): 
-
-Page size set to: 24
-
-Commands: :ai, :wiki, :help, :quit.
+Commands: :ai, :wiki, :guestbook, :help, :quit.
 Article wrapping: 78, page_size: 24
 
 Wiki> SOS
@@ -131,7 +123,7 @@ Wiki> SOS
 9.    Further reading
 10.    External links
 
--- Page 1/1 -- (j=down, k=up, t=back, Enter/number=select chapter, q=cancel):
+-- Page 1/1 -- (h/l=prev/next, j/k=chapter, t=exit-TOC, q(w)=exit): 
 ```
 
 #### Link outline [] with <> for selection plus █search matches█:
@@ -141,7 +133,7 @@ internationally, originally established for maritime use. In formal notation
 SOS is written with an overscore line (SOS), to indicate that the [█Morse code█]
 equivalents for the individual letters of "SOS" are transmitted as an unbroken
 sequence of three dots / three dashes / three dots, with no spaces between the
-letters. In <International █Morse Code█> three dots form the letter "S" and
+letters. In [International █Morse Code█] three dots form the letter "S" and
 three dashes make the letter "O", so "S O S" became a common way to remember
 the order of the dots and dashes. IWB, VZE, 3B, and V7 form equivalent
 sequences, but traditionally SOS is the easiest to remember.
@@ -159,9 +151,8 @@ effective 1 April 1905. It became a worldwide standard when it was included in
 the service regulations of the first International Radiotelegraph Convention
 signed on 3 November 1906, which became effective on 1 July 1908. In modern
 terminology, SOS is a Morse "procedural signal" or "prosign", used as a start-
-of-message mark for transmissions requesting assistance when loss of life or
 
--- Page 1/11 -- (l=next, h=prev, t=TOC, q=exit, j/k=links, s/d=search, a=AI):
+-- Page 1/11 -- (h/l=prev/next, t=TOC, j/k=links, q(w)=exit, s/d/f=search, a=AI): 
 ```
 
 #### Paginated chatlog with AI agent (after token-by-token output):
