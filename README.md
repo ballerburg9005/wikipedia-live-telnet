@@ -1,5 +1,3 @@
-# wikipedia-live-telnet
-
 https://github.com/user-attachments/assets/06e80101-9ac3-493f-93f4-ce9fd2995af7
 
 The goal of this project is to make Wikipedia and general information from the Internet available via Wikipedia API plus an AI assistant who simply reads Wikipedia article or search results to answer queries. This is mainly interesting to people using vintage pre-DOS-era machines, like CP/M Osborne-1 or C64.
