@@ -30,6 +30,9 @@ The service is guaranteed to work indefinitely, due to being hosted on Oracle Cl
 * For some reason as of right now search does not trigger in production server but triggers at home, very strange.
 
 * Superquit (w) does not work properly
+* ASCII mode displays unicode characters
+* no testing done on 40x12
+* the links seem to sometimes rarely be indentified wrong, such as te[lecommun]ication
 
 ## general guide running
 
