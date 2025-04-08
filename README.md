@@ -21,7 +21,7 @@ The service is guaranteed to work indefinitely, due to being hosted on Oracle Cl
 
 ## todo
 
-* navigation keys don't work instantly to interrupt while the client still receives text (maybe impossible)
+* navigation keys don't work instantly to interrupt while the client still receives text (maybe totally impossible with modern TCP buffer sizes and such)
 
 * in testing branch: guestbook, various other improvements, system_text in server.cfg was unused by accident, and auth token hardcoded to AAAAB3NzaC1yc2EAAAADAQABAAABAQDBg and not being read from config
 
