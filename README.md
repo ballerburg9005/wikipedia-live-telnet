@@ -34,6 +34,7 @@ The service is guaranteed to work indefinitely, due to being hosted on Oracle Cl
 * no testing done on 40x16
 * the links seem to sometimes rarely be indentified wrong, such as [tex]t
 * implement proper communication between ollama and telnet server for clearing RAG-triggering message, instead of clear-screen escape sequence hack.
+* use embedding model and feed it full search results of 10 first results (currently 2k characters of first 3 results are fed to agent directly)
 
 
 ## general guide running
